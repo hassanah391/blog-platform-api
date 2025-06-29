@@ -7,6 +7,8 @@ const dbHost = process.env.DB_HOST || 'localhost';
 const dbUser = process.env.DB_USER;
 const dbPassword = process.env.DB_PASSWORD;
 const dbName = process.env.DB_NAME || 'blog_app';
+const serverPort = process.env.SERVER_PORT || 3000;
+const serverHost = process.env.SERVER_HOST || 'localhost';
 export const config = {
   dbPort,
   dbHost,
@@ -14,4 +16,6 @@ export const config = {
     ? `mongodb://${dbUser}:${dbPassword}@${dbHost}:${dbPort}`
     : `mongodb://${dbHost}:${dbPort}`,
   dbName,
+  serverHost,
+  serverPort
 };
