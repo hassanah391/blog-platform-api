@@ -36,15 +36,9 @@ class DBClient {
 
     // Initialize MongoDB client with connection pooling
     this.client = new MongoClient(this.uri, {
-      serverApi: {
-        version: ServerApiVersion.v1,
-        strict: true,
-        deprecationErrors: true,
-      },
-      // Connection pool settings for optimal performance
-      maxPoolSize: 10, // Maximum number of connections in the pool
-      minPoolSize: 2, // Minimum number of connections to maintain
-      maxIdleTimeMS: 30000, // Close connections after 30 seconds of inactivity
+      maxPoolSize: 10,
+      minPoolSize: 2,
+      maxIdleTimeMS: 30000,
     });
   }
 
@@ -86,11 +80,16 @@ class DBClient {
    * const db = dbClient.getDb();
    * const usersCollection = db.collection('users');
    */
-  getDb() {
+  async getDb() {
     if (!this.connected) {
       throw new Error('Database not connected. Call init() first.');
     }
     return this.client.db(this.dbName);
+  }
+
+  async getCollection(collectionName) {
+    const db = await this.getDb();
+    return db.collection(collectionName);// returns collection instance
   }
 
   /**
@@ -150,5 +149,5 @@ class DBClient {
     }
   }
 }
-
-export default DBClient;
+const dbClient = new DBClient();
+export default dbClient;
