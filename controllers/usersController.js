@@ -3,6 +3,7 @@ import dbClient from '../utils/db.js';
 import argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
 import { config } from '../config.js';
+import { ObjectId } from 'mongodb';
 
 
 export default class UsersController {
@@ -83,8 +84,8 @@ export default class UsersController {
     } catch (err) {
       return response.status(401).send({ error: 'Invalid or expired refresh token' });
     }
-    // Find user with this refresh token
-    const user = await usersCollection.findOne({ _id: payload.userId, refreshToken });
+    // Find user with this refresh token (convert userId to ObjectId)
+    const user = await usersCollection.findOne({ _id: new ObjectId(payload.userId), refreshToken });
     if (!user) {
       return response.status(401).send({ error: 'Invalid refresh token' });
     }
