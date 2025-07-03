@@ -19,7 +19,8 @@
     "dotenv": "^17.0.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mongodb": "6.17"
+    "mongodb": "6.17",
+    "supertest": "^7.1.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.27.2",
