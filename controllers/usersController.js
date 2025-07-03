@@ -1,7 +1,8 @@
 import express from 'express';
 import dbClient from '../utils/db.js';
 import argon2 from 'argon2';
-
+import jwt from 'jsonwebtoken';
+import { config } from '../config.js';
 
 
 export default class UsersController {
@@ -41,28 +42,77 @@ export default class UsersController {
     return response.status(201).send(user);
   }
 
-  // /**
-  //  *
-  //  * Should retrieve the user base on the token used
-  //  *
-  //  * Retrieve the user based on the token:
-  //  * If not found, return an error Unauthorized with a
-  //  * status code 401
-  //  * Otherwise, return the user object (email and id only)
-  //  */
-  // static async getMe(request, response) {
-  //   const { userId } = await userUtils.getUserIdAndKey(request);
+  static async connectUser(request, response) {
+    const { email, password } = request.body;
+    if (!email) { return response.status(400).send({ error: 'Missing email' }) }
+    if (!password) { return response.status(400).send({ error: 'Missing password' }); }
 
-  //   const user = await userUtils.getUser({
-  //     _id: ObjectId(userId),
-  //   });
+    await dbClient.init();
+    const usersCollection = await dbClient.getCollection('users');
+    const user = await usersCollection.findOne({ email });
+    if (!user) { return response.status(401).send({ error: 'User doesn\'t exist' })}
 
-  //   if (!user) return response.status(401).send({ error: 'Unauthorized' });
+    const hashedPasswordFromDB = user.password;
+    const isMatch = await argon2.verify(hashedPasswordFromDB, password);
+    if (!isMatch) { return response.status(401).send({ error: 'Wrong Password' }) }
 
-  //   const processedUser = { id: user._id, ...user };
-  //   delete processedUser._id;
-  //   delete processedUser.password;
+    const payload = {
+      userId: user._id,
+      email: user.email,
+    };
+    // Generate access token
+    const accessToken = jwt.sign(payload, config.secretKey, { expiresIn: '1h' });
+    // Generate refresh token (longer expiry)
+    const refreshToken = jwt.sign(payload, config.secretKey, { expiresIn: '7d' });
+    // Store refresh token in DB
+    await usersCollection.updateOne({ _id: user._id }, { $set: { refreshToken } });
+    response.send({ accessToken, refreshToken });
+  }
 
-  //   return response.status(200).send(processedUser);
-  // }
+  // Refresh token endpoint
+  static async refreshToken(request, response) {
+    const { refreshToken } = request.body;
+    if (!refreshToken) {
+      return response.status(400).send({ error: 'Missing refresh token' });
+    }
+    await dbClient.init();
+    const usersCollection = await dbClient.getCollection('users');
+    let payload;
+    try {
+      payload = jwt.verify(refreshToken, config.secretKey);
+    } catch (err) {
+      return response.status(401).send({ error: 'Invalid or expired refresh token' });
+    }
+    // Find user with this refresh token
+    const user = await usersCollection.findOne({ _id: payload.userId, refreshToken });
+    if (!user) {
+      return response.status(401).send({ error: 'Invalid refresh token' });
+    }
+    // Issue new access token (and optionally rotate refresh token)
+    const newAccessToken = jwt.sign({ userId: user._id, email: user.email }, config.secretKey, { expiresIn: '1h' });
+    // Optionally rotate refresh token for extra security
+    const newRefreshToken = jwt.sign({ userId: user._id, email: user.email }, config.secretKey, { expiresIn: '7d' });
+    await usersCollection.updateOne({ _id: user._id }, { $set: { refreshToken: newRefreshToken } });
+    response.send({ accessToken: newAccessToken, refreshToken: newRefreshToken });
+  }
+
+  /**
+   *
+   * Should retrieve the user base on the token used
+   *
+   * Retrieve the user based on the token:
+   * If not found, return an error Unauthorized with a
+   * status code 401
+   * Otherwise, return the user object (email and id only)
+   */
+  static async getMe(request, response) {
+
+    const user = await request.user;
+
+    if (!user) return response.status(401).send({ error: 'Unauthorized' });
+
+    const processedUser = { id: user._id, ...user };
+
+    return response.status(200).send(processedUser);
+  }
 }
