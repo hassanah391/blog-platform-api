@@ -6,7 +6,7 @@ import { config } from '../config.js';
 import { ObjectId } from 'mongodb';
 
 
-export default class UsersController {
+export default class AuthController {
   static async createUser(request, response) {
     const { email, password, firstName, lastName, phoneNumber} = request.body;
 
@@ -97,23 +97,4 @@ export default class UsersController {
     response.send({ accessToken: newAccessToken, refreshToken: newRefreshToken });
   }
 
-  /**
-   *
-   * Should retrieve the user base on the token used
-   *
-   * Retrieve the user based on the token:
-   * If not found, return an error Unauthorized with a
-   * status code 401
-   * Otherwise, return the user object (email and id only)
-   */
-  static async getMe(request, response) {
-
-    const user = await request.user;
-
-    if (!user) return response.status(401).send({ error: 'Unauthorized' });
-
-    const processedUser = { id: user._id, ...user };
-
-    return response.status(200).send(processedUser);
-  }
 }
