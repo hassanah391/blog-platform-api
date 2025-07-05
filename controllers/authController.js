@@ -30,7 +30,9 @@ export default class AuthController {
         lastName,
         email,
         password: hashedPassword,
-        phoneNumber
+        phoneNumber,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       });
     } catch (err) {
       return response.status(500).send({ error: 'Error creating user.' });
