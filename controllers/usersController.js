@@ -120,4 +120,22 @@ export default class UsersController {
         return response.status(500).json({ error: 'Internal server error' });
       }
     }
+
+    static async getUserPosts(request, response) {
+      try {
+        const {id: userId} = request.params;
+        if (!userId) { return response.status(400).json({error: "User ID is required"})}
+        if (!ObjectId.isValid(userId)) { return response.status(400).json({error: "Invalid User Id"})}
+        await dbClient.init();
+        const postsCollection = await dbClient.getCollection('posts');
+        const cursor = await postsCollection.find({author: new ObjectId(userId)});
+        const posts = await cursor.toArray();
+        if (posts.length === 0) {
+          return response.status(404).json({ message: "No posts found for this user." });
+        }
+        return response.status(200).send(posts);
+      } catch (error) {
+        return response.status(500).json({error: "Can't fetch user posts"});
+      }
+    }
 }
