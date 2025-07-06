@@ -4,6 +4,9 @@ import authRoutes from './authRoutes.js';
 import usersRoutes from './usersRoutes.js';
 import postsRoutes from './postsRoutes.js';
 
+// index.js - Main API router
+// Combines all route modules
+
 router.use('/auth', authRoutes);
 
 router.use('/users', usersRoutes);

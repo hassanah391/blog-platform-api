@@ -66,6 +66,7 @@ describe('Users Routes', () => {
   });
 
   describe('GET /users/me', () => {
+    // Test getting current user info
     test('should return user info with valid token', async () => {
       const res = await request(app)
         .get('/users/me')
@@ -97,6 +98,7 @@ describe('Users Routes', () => {
   });
 
   describe('DELETE /users/me', () => {
+    // Test deleting user
     test('should delete user account with valid token', async () => {
       const res = await request(app)
         .delete('/users/me')
@@ -125,6 +127,7 @@ describe('Users Routes', () => {
   });
 
   describe('PUT /users/me/profile', () => {
+    // Test updating user profile
     let profileTestUser, newAccessToken;
 
     beforeEach(async () => {

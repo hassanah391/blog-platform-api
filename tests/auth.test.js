@@ -18,7 +18,10 @@ const testUser = {
 
 let accessToken, refreshToken;
 
+// auth.test.js - Tests for authentication endpoints
+// Uses supertest to test signup, signin, and token refresh
 describe('Auth System', () => {
+  // Tests for /auth endpoints
   beforeAll(async () => {
     await dbClient.init();
     const usersCollection = await dbClient.getCollection('users');
@@ -32,6 +35,7 @@ describe('Auth System', () => {
   });
 
   test('Signup: should create a new user', async () => {
+    // Test user signup
     const res = await request(app)
       .post('/auth/signup')
       .send(testUser);
@@ -41,6 +45,7 @@ describe('Auth System', () => {
   });
 
   test('Signin: should return access and refresh tokens', async () => {
+    // Test user signin
     const res = await request(app)
       .post('/auth/signin')
       .send({ email: testUser.email, password: testUser.password });
@@ -52,6 +57,7 @@ describe('Auth System', () => {
   });
 
   test('Protected endpoint: should allow access with valid token', async () => {
+    // Test protected endpoint with valid token
     const res = await request(app)
       .get('/auth/protected')
       .set('Authorization', `Bearer ${accessToken}`);
@@ -60,6 +66,7 @@ describe('Auth System', () => {
   });
 
   test('Protected endpoint: should deny access with invalid token', async () => {
+    // Test protected endpoint with invalid token
     const res = await request(app)
       .get('/auth/protected')
       .set('Authorization', 'Bearer invalidtoken');
@@ -67,6 +74,7 @@ describe('Auth System', () => {
   });
 
   test('Refresh token: should issue new access and refresh tokens', async () => {
+    // Test refresh token
     const res = await request(app)
       .post('/auth/refresh-token')
       .send({ refreshToken });

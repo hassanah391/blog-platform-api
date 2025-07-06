@@ -5,6 +5,9 @@ import app from '../server.js';
 import dbClient from '../utils/db.js';
 import { config } from '../config.js';
 
+// posts.test.js - Tests for post-related API endpoints
+// Uses supertest to test CRUD operations for posts
+
 // Mock the database client
 jest.mock('../utils/db.js');
 
@@ -28,6 +31,7 @@ describe('Posts Routes', () => {
   });
 
   describe('GET /posts', () => {
+    // Test getting all posts
     it('should return all posts with pagination', async () => {
       const mockPosts = [
         { _id: new ObjectId(), title: 'Test Post 1', body: 'Content 1', author: new ObjectId(mockUserId) },
@@ -73,6 +77,7 @@ describe('Posts Routes', () => {
   });
 
   describe('GET /posts/:id', () => {
+    // Test getting a post by ID
     it('should return a specific post by ID', async () => {
       const mockPost = {
         _id: new ObjectId(mockPostId),
@@ -132,6 +137,7 @@ describe('Posts Routes', () => {
   });
 
   describe('POST /posts', () => {
+    // Test creating a post
     it('should create a new post successfully', async () => {
       const postData = {
         title: 'New Post',
@@ -191,6 +197,7 @@ describe('Posts Routes', () => {
   });
 
   describe('PUT /posts/:id', () => {
+    // Test updating a post
     it('should update a post successfully', async () => {
       const updateData = {
         title: 'Updated Post',

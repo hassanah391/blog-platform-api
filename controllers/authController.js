@@ -5,9 +5,14 @@ import jwt from 'jsonwebtoken';
 import { config } from '../config.js';
 import { ObjectId } from 'mongodb';
 
-
+// authController.js - Handles authentication and user registration
+// Provides endpoints for signup, signin, and token refresh
 export default class AuthController {
+  /**
+   * Controller for authentication endpoints
+   */
   static async createUser(request, response) {
+    // Register a new user
     const { email, password, firstName, lastName, phoneNumber} = request.body;
 
     if (!email) return response.status(400).send({ error: 'Missing email' });
@@ -46,6 +51,7 @@ export default class AuthController {
   }
 
   static async connectUser(request, response) {
+    // Authenticate user and issue tokens
     const { email, password } = request.body;
     if (!email) { return response.status(400).send({ error: 'Missing email' }) }
     if (!password) { return response.status(400).send({ error: 'Missing password' }); }
@@ -74,6 +80,7 @@ export default class AuthController {
 
   // Refresh token endpoint
   static async refreshToken(request, response) {
+    // Refresh JWT access and refresh tokens
     const { refreshToken } = request.body;
     if (!refreshToken) {
       return response.status(400).send({ error: 'Missing refresh token' });

@@ -3,7 +3,12 @@ import dbClient from '../utils/db.js';
 import { config } from '../config.js';
 import { ObjectId } from 'mongodb';
 
+// usersController.js - Handles user-related API logic
+// Provides endpoints for user info, profile, and posts
 export default class UsersController {
+    /**
+     * Controller for user-related endpoints
+     */
     /**
    *
    * Should retrieve the user base on the token used
@@ -14,7 +19,7 @@ export default class UsersController {
    * Otherwise, return the user object (email and id only)
    */
     static async getMe(request, response) {
-
+      // Get current user info from token
       const user = await request.user;
   
       if (!user) return response.status(401).send({ error: 'Unauthorized' });
@@ -25,6 +30,7 @@ export default class UsersController {
     }
 
     static async deleteMe(request, response) {
+      // Delete the authenticated user's account
       try {
         const user = await request.user;
 
@@ -46,6 +52,7 @@ export default class UsersController {
     }
 
     static async addProfileInfo(request, response) {
+      // Add or update user bio
       try {
         const user = await request.user;
         const { bio } = request.body;
@@ -79,6 +86,7 @@ export default class UsersController {
       }
     }
     static async getUserPublicInfo(request, response) {
+      // Get public info for a user by ID
       try {
         const { id: userId } = request.params;
         
@@ -122,6 +130,7 @@ export default class UsersController {
     }
 
     static async getUserPosts(request, response) {
+      // Get all posts for a user by ID
       try {
         const {id: userId} = request.params;
         if (!userId) { return response.status(400).json({error: "User ID is required"})}

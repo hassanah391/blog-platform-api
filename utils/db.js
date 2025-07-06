@@ -1,6 +1,9 @@
 import { MongoClient, ServerApiVersion } from 'mongodb';
 import { config } from '../config.js';
 
+// db.js - MongoDB client wrapper for the blog platform
+// Handles connection, health check, and collection access
+
 /**
  * MongoDB Database Client
  *
@@ -56,12 +59,13 @@ class DBClient {
    * await dbClient.init();
    */
   async init() {
+    // Connect to MongoDB
     try {
       await this.client.connect();
       this.connected = true;
-      console.log('✅ Connected to MongoDB successfully');
+      console.log('\u2705 Connected to MongoDB successfully');
     } catch (error) {
-      console.error('❌ Failed to connect to MongoDB:', error.message);
+      console.error('\u274c Failed to connect to MongoDB:', error.message);
       throw error; // Re-throw to allow caller to handle the error
     }
     return this; // Return instance for method chaining
@@ -81,6 +85,7 @@ class DBClient {
    * const usersCollection = db.collection('users');
    */
   async getDb() {
+    // Get the database instance
     if (!this.connected) {
       throw new Error('Database not connected. Call init() first.');
     }
@@ -88,6 +93,7 @@ class DBClient {
   }
 
   async getCollection(collectionName) {
+    // Get a collection by name
     const db = await this.getDb();
     return db.collection(collectionName);// returns collection instance
   }
@@ -98,6 +104,7 @@ class DBClient {
    * @returns {boolean} True if connected, false otherwise
    */
   isConnected() {
+    // Check if client is connected
     return this.connected;
   }
 
@@ -111,10 +118,11 @@ class DBClient {
    * await dbClient.close();
    */
   async close() {
+    // Close the MongoDB connection
     if (this.client) {
       await this.client.close();
       this.connected = false;
-      console.log('🔌 MongoDB connection closed');
+      console.log('\ud83d\udd0c MongoDB connection closed');
     }
   }
 
@@ -135,6 +143,7 @@ class DBClient {
    * }
    */
   async healthCheck() {
+    // Ping the database to check health
     try {
       // Check if we think we're connected
       if (!this.connected) return false;

@@ -4,7 +4,11 @@ import { config } from '../config.js';
 import { ObjectId } from 'mongodb';
 
 export default class PostsController {
+  /**
+   * Controller for post-related endpoints
+   */
   static async getAllPostsFromDB(request, response) {
+    // Get all posts with pagination
     try {
       await dbClient.init();
       const { page = 1, limit = 10, sort = 'createdAt', order = 'desc' } = request.query;
@@ -36,6 +40,7 @@ export default class PostsController {
   }
 
   static async getPost(request, response) {
+    // Get a single post by ID
     try {
       const { id } = request.params;
 
@@ -61,6 +66,7 @@ export default class PostsController {
   }
 
   static async createPost(request, response) {
+    // Create a new post
     try {
       const user = request.user;
       const { title, body, tags, coverImageUrl} = request.body;
@@ -92,6 +98,7 @@ export default class PostsController {
   }
 
   static async updatePost(request, response) {
+    // Update a post by ID (author only)
     try {
       const user = request.user;
       const { id } = request.params;
@@ -140,6 +147,7 @@ export default class PostsController {
   }
 
   static async deletePost(request, response) {
+    // Delete a post by ID (author only)
     try {
       const user = request.user;
       const {id: postId} = request.params;

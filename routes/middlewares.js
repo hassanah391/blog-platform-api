@@ -1,7 +1,10 @@
 import jwt from 'jsonwebtoken';
 import { config } from '../config.js';
 
+// middlewares.js - Custom Express middlewares
+// Provides authentication middleware for route protection
 export function authMiddleware(request, response, next) {
+  // Checks for JWT in Authorization header
   const authHeader = request.header('Authorization') || '';
   const token = authHeader.split(' ')[1];
 
