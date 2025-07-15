@@ -336,7 +336,7 @@ This project is licensed under the ISC License - see the [LICENSE](LICENSE) file
 
 ## 🔗 Links
 
-- **Live Demo**: []
+- **Demo video**: [demo video link](https://drive.google.com/file/d/1zKdtBxq8ewpIr3j-O2F5pHPJVv83j-2h/view)
 
 ---
 
